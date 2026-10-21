@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Compound interest basics</title>
+<style>
+  :root{
+    --paper:#F3EFE6; --paper2:#E6DFCE; --ink:#1F1E1B; --mute:#6F695C;
+    --clay:#D97757; --clay-press:#C4633F; --on-clay:#1F1E1B;
+    --chip:#FBF8F1; --line:rgba(31,30,27,.11); --rule:#D3CBB8;
+    --ok:#3E7B55; --ok-soft:#DCEADB; --bad:#B23A2E; --bad-soft:#F5E0DB; --flag:#A8680F;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:ui-sans-serif,-apple-system,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#1B1A18; --paper2:#262420; --ink:#F3EFE6; --mute:#A8A294;
+      --clay:#E08463; --clay-press:#CC7050; --on-clay:#1F1E1B;
+      --chip:#2D2B27; --line:rgba(243,239,230,.10); --rule:#47433B;
+      --ok:#7CC59B; --ok-soft:#1F3326; --bad:#EC7A6E; --bad-soft:#3A2220; --flag:#E2A94A;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#1B1A18; --paper2:#262420; --ink:#F3EFE6; --mute:#A8A294;
+    --clay:#E08463; --clay-press:#CC7050; --on-clay:#1F1E1B;
+    --chip:#2D2B27; --line:rgba(243,239,230,.10); --rule:#47433B;
+    --ok:#7CC59B; --ok-soft:#1F3326; --bad:#EC7A6E; --bad-soft:#3A2220; --flag:#E2A94A;
+    color-scheme:dark;
+  }
+  :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  *,*::before,*::after{box-sizing:inherit}
+  html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+  body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+  button,select{font:inherit;color:inherit}
+  .hidden{display:none!important}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .pin{max-width:780px;margin:0 auto;padding:22px 20px 40px}
+  h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-.01em;margin:0}
+  h1{font-size:clamp(32px,8.8vw,44px);line-height:1.08;margin:6px 0 8px;outline:none}
+  h3{font-size:22px;line-height:1.2}
+  .sub-t{margin:0 0 18px;color:var(--mute);font-size:16px;line-height:1.45}
+  .muted{color:var(--mute)} .note{font-size:14px;color:var(--mute);line-height:1.45}
+  section+section{margin-top:18px}
+  .sheet{background:var(--chip);border:1px solid var(--line);border-radius:20px;padding:20px}
+  .btn{appearance:none;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);height:46px;padding:0 22px;border-radius:999px;cursor:pointer;font:600 15px var(--sans)}
+  .btn.ghost{background:transparent;color:var(--ink)} .btn.small{height:44px;padding:0 18px;font-size:14px}
+  .btn.clay{background:var(--clay);border-color:var(--clay);color:var(--on-clay)}
+  .btn:disabled{opacity:.4;cursor:not-allowed} .btn:active:not(:disabled){transform:scale(.98)}
+  .link{background:none;border:0;padding:0;min-height:44px;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:600 14px var(--sans)}
+  :focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+  .back{display:inline-flex;align-items:center;gap:2px;height:44px;margin-left:-10px;padding:0 14px 0 6px;border:0;border-radius:999px;background:none;color:var(--mute);font:500 15px var(--sans);cursor:pointer}
+  .back svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .level{display:inline-block;padding:3px 10px;border:1px solid var(--rule);border-radius:999px;font-size:12px;font-weight:600;color:var(--mute)}
+  .row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .scale{position:relative;height:46px;margin:18px 0 6px}
+  .scale .bar2{position:absolute;left:0;right:0;top:18px;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--paper2) 0 80%,var(--ok-soft) 80% 100%);border:1px solid var(--rule)}
+  .scale .pass{position:absolute;top:8px;bottom:6px;left:80%;width:2px;background:var(--ok)}
+  .scale .pass span{position:absolute;top:-6px;right:8px;font-size:12px;color:var(--ok);white-space:nowrap;font-weight:700}
+  .scale .mark{position:absolute;top:10px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:var(--clay);border:3px solid var(--chip);box-shadow:0 0 0 2px var(--ink);transition:left .6s ease}
+  .scale .ends{position:absolute;left:0;right:0;bottom:-8px;display:flex;justify-content:space-between;font-size:12px;color:var(--mute)}
+  .proj{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .proj strong{font-family:var(--serif);font-weight:500;font-size:44px;line-height:1}
+  .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px}
+  .mode{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid var(--line);border-radius:20px;background:var(--chip)}
+  .mode p{margin:0;color:var(--mute);font-size:15px;line-height:1.45}
+  .mode .row{margin-top:auto;padding-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .mode select{height:44px;padding:0 10px;border:1px solid var(--rule);border-radius:14px;background:var(--paper);max-width:100%;font:500 15px var(--sans)}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:15px}
+  th{font-size:13px;color:var(--mute);font-weight:600}
+  .meter{height:10px;border-radius:5px;background:var(--paper);border:1px solid var(--rule);overflow:hidden;min-width:80px}
+  .meter i{display:block;height:100%;background:var(--ok)} .meter.low i{background:var(--bad)}
+  .tablewrap{overflow-x:auto}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chp{border:1px solid var(--rule);border-radius:999px;padding:4px 12px;font-size:14px;background:var(--chip)} .chp b{color:var(--bad)}
+  .pts{margin:14px 0 0;padding-left:22px} .pts li{margin:0 0 10px}
+  details{border-bottom:1px solid var(--line)}
+  details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:48px;font-weight:600}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";font-size:22px;font-weight:400;color:var(--mute)}
+  details[open] summary::after{content:"\2212"}
+  details .d{padding:0 0 14px;color:var(--mute)}
+  .qhead{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);margin:0 0 18px;flex-wrap:wrap}
+  .timer{font-weight:700;font-variant-numeric:tabular-nums} .timer.low{color:var(--bad)}
+  .qmeta{font-size:14px;color:var(--mute);margin-bottom:8px}
+  .qtext{font-size:19px;line-height:1.45;margin:0 0 18px}
+  .opts{display:flex;flex-direction:column;gap:10px;list-style:none;padding:0;margin:0}
+  .opt{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;padding:13px 14px;background:var(--paper);border:1.5px solid var(--rule);border-radius:16px;cursor:pointer;font-size:16.5px;line-height:1.4}
+  .opt:active:not([aria-disabled="true"]){background:var(--paper2)}
+  .bub{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-size:13px;font-weight:700}
+  .opt.sel{border-color:var(--ink)} .opt.sel .bub{background:var(--ink);color:var(--paper)}
+  .opt.right{border-color:var(--ok);background:var(--ok-soft)} .opt.right .bub{border-color:var(--ok);background:var(--ok);color:var(--chip)}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft)} .opt.wrong .bub{border-color:var(--bad);background:var(--bad);color:var(--chip)}
+  .opt[aria-disabled="true"]{cursor:default}
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:16px;border-left:5px solid var(--ok);background:var(--ok-soft)}
+  .feedback.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+  .feedback p{margin:.3em 0;font-size:16px}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+  .cell{width:40px;height:40px;border-radius:50%;border:2px solid var(--rule);background:var(--chip);font-size:13px;cursor:pointer;position:relative}
+  .cell.ans{border-color:var(--ink);background:var(--ink);color:var(--paper)} .cell.cur{box-shadow:0 0 0 3px var(--clay)}
+  .cell.flg::after{content:"";position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:var(--flag);border:2px solid var(--paper)}
+  .flagbtn[aria-pressed="true"]{border-color:var(--flag);color:var(--flag)}
+  .verdict{font-family:var(--serif);font-weight:500;font-size:40px;line-height:1.1;margin:6px 0}
+  .ok-t{color:var(--ok)} .bad-t{color:var(--bad)}
+  .rev details{padding:8px 0} .rev summary{align-items:flex-start;font-weight:500}
+  .dot{flex:0 0 auto;width:14px;height:14px;border-radius:50%;margin-top:6px}
+  .dot.ok{background:var(--ok)} .dot.no{background:var(--bad)} .dot.skip{background:var(--rule)}
+  .ans-list{margin:10px 0 0 24px;padding:0} .ans-list li{margin:4px 0}
+  .ans-list .c{color:var(--ok);font-weight:700} .ans-list .y{color:var(--bad);text-decoration:line-through}
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-size:14.5px;z-index:30;max-width:90vw}
+  .foot{margin-top:28px;text-align:center}
+  @media (max-width:560px){.sheet{padding:16px}.verdict{font-size:32px}.proj strong{font-size:36px}}
+  @media (prefers-reduced-motion: reduce){.scale .mark{transition:none}}
+</style>
+</head>
+<body>
+<div class="pin">
+  <main id="vCourse"></main>
+  <main id="vNotes" class="hidden"></main>
+  <main id="vQ" class="hidden"></main>
+  <main id="vRes" class="hidden"></main>
+  <p class="note foot">Made with Claude Scholar. Your progress is saved only in this browser.</p>
+</div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<script type="application/json" id="course-data">{"v":1,"id":"compound-interest-basics-049de1","title":"Compound interest basics","topic":"How compound interest works","level":"Beginner","blurb":"Work out how money grows when interest earns interest, and use the formula and the Rule of 72.","sections":[{"id":"s1","name":"Simple vs compound interest","summary":"How interest is calculated on the original amount alone versus on the amount plus the interest already earned.","points":["Interest is the price of borrowing money or the reward for lending it, usually quoted as a percentage per year.","Simple interest is calculated only on the original amount, called the principal.","Compound interest is calculated on the principal plus any interest already earned.","Because earned interest also earns interest, compound growth speeds up over time while simple growth stays in a straight line."],"terms":[{"t":"Principal","d":"The original amount of money borrowed or invested."},{"t":"Simple interest","d":"Interest calculated only on the principal."},{"t":"Compound interest","d":"Interest calculated on the principal and on interest already earned."}]},{"id":"s2","name":"The compound interest formula","summary":"Reading and using A = P(1 + r/n)^(nt) to find a final balance.","points":["The formula is A = P(1 + r/n)^(nt), where A is the final amount.","P is the principal, r is the annual rate written as a decimal, n is the number of compounding periods per year, and t is the number of years.","A 6% rate becomes r = 0.06 in the formula.","Compounding more often, such as monthly instead of yearly, gives a slightly higher final amount at the same stated rate."],"terms":[{"t":"Compounding period","d":"How often earned interest is added to the balance, such as monthly or yearly."},{"t":"Nominal rate","d":"The stated yearly rate before compounding is applied."},{"t":"Annual percentage yield (APY)","d":"The effective yearly rate after compounding is taken into account."}]},{"id":"s3","name":"Rule of 72 and long horizons","summary":"A quick way to estimate doubling time, and why time and debt matter so much with compounding.","points":["The Rule of 72 estimates doubling time: years to double is roughly 72 divided by the annual percentage rate.","At 8% a year, money takes about 9 years to double.","The rule is an approximation that works best for rates between about 6% and 10%.","Starting earlier lets growth compound for longer, so time often matters more than the exact rate.","Compounding works against borrowers too, as with an unpaid credit card balance."],"terms":[{"t":"Rule of 72","d":"A shortcut: divide 72 by the annual rate to estimate years needed to double."},{"t":"Doubling time","d":"How long it takes a balance to grow to twice its starting size."},{"t":"Time horizon","d":"The length of time money is left to grow or debt is left to accrue."}]}],"qs":[{"id":"s1-q1","s":"s1","q":"You invest $1,000 at 5% simple interest per year. How much interest do you earn in total over 3 years?","o":["$50","$150","$157.63","$1,150"],"a":1,"x":"Simple interest is principal times rate times years: 1,000 x 0.05 x 3 = $150. $157.63 is the compound interest for the same case (1,000 x 1.05^3 minus 1,000). $1,150 is the final balance, not the interest, and $50 is only one year."},{"id":"s1-q2","s":"s1","q":"What makes compound interest different from simple interest?","o":["It always uses a higher stated rate","It is calculated only once at the end","It is also calculated on interest already earned","It is only paid on loans"],"a":2,"x":"Compound interest is figured on the principal plus interest that has already been added. The stated rate can be the same in both cases, it applies to savings as well as loans, and it is added every period rather than once."},{"id":"s1-q3","s":"s1","q":"Which description fits how a balance grows under simple interest?","o":["It adds the same dollar amount every period","It adds a larger dollar amount each period","It adds a smaller dollar amount each period","It grows only in the final year"],"a":0,"x":"Simple interest is always figured on the original principal, so the dollar amount added each period never changes. A growing amount each period describes compounding."},{"id":"s1-q4","s":"s1","q":"A $2,000 deposit earns 10% interest compounded annually. What is the balance after 2 years?","o":["$2,400","$2,420","$2,440","$2,200"],"a":1,"x":"After year 1 the balance is 2,000 x 1.10 = $2,200. After year 2 it is 2,200 x 1.10 = $2,420. $2,400 would be simple interest (2 x $200), and $2,200 is only the first year."},{"id":"s2-q5","s":"s2","q":"In the formula A = P(1 + r/n)^(nt), what does n represent?","o":["The number of years","The annual rate as a decimal","The final amount","The number of times interest compounds per year"],"a":3,"x":"n is the number of compounding periods per year, such as 12 for monthly. The years are t, the rate is r, and the final amount is A."},{"id":"s2-q6","s":"s2","q":"Which value of r do you use in the formula for a 4.5% annual rate?","o":["4.5","0.45","0.045","0.0045"],"a":2,"x":"The rate goes into the formula as a decimal, so 4.5% is 4.5 divided by 100, which is 0.045. Using 4.5 or 0.45 would overstate growth enormously."},{"id":"s2-q7","s":"s2","q":"Two accounts both advertise a 12% yearly rate. One compounds yearly and the other monthly. After one year, which has more money?","o":["The yearly one","The monthly one","They are exactly equal","It cannot be determined"],"a":1,"x":"With monthly compounding each month's interest starts earning interest sooner. The balance grows by 1.01^12, about 12.68%, compared with exactly 12% for yearly compounding."},{"id":"s2-q8","s":"s2","q":"You deposit $500 at 6% compounded annually for 2 years. Which expression gives the final amount?","o":["500 x (1 + 0.06)^2","500 x (1 + 0.06 x 2)","500 x (1 + 0.06/2)^2","500 + 0.06 x 2"],"a":0,"x":"Annual compounding means n = 1 and t = 2, giving 500 x (1.06)^2. The second option is simple interest, the third compounds twice a year for only one year, and the fourth ignores the principal's growth."},{"id":"s2-q9","s":"s2","q":"What is the effective annual rate of 12% nominal interest compounded monthly, to the nearest hundredth of a percent?","o":["12.00%","12.36%","12.68%","13.00%"],"a":2,"x":"Monthly compounding multiplies the balance by (1 + 0.12/12)^12 = 1.01^12, about 1.1268, so the effective rate is 12.68%. 12.36% is what you would get compounding twice a year, and 12.00% ignores compounding."},{"id":"s3-q10","s":"s3","q":"Using the Rule of 72, about how many years does it take money to double at 6% per year?","o":["6 years","9 years","12 years","18 years"],"a":2,"x":"The Rule of 72 gives 72 divided by 6, which is 12 years. 9 years would be the answer at 8%, and 6 or 18 years do not match the rule."},{"id":"s3-q11","s":"s3","q":"Money is expected to double in about 18 years. According to the Rule of 72, what annual rate does that imply?","o":["2%","4%","6%","8%"],"a":1,"x":"Rearranging the rule gives rate = 72 divided by years, so 72 / 18 = 4%. A rate of 8% would double money in about 9 years."},{"id":"s3-q12","s":"s3","q":"Everything else equal, what is the best reason to start investing earlier?","o":["Growth has more time to compound","Interest rates are higher for younger people","Taxes disappear over time","Simple interest turns into compound interest"],"a":0,"x":"Compounding builds on itself, so each extra year of growth adds to a larger base. Rates do not depend on your age, taxes do not vanish, and simple interest never turns into compound interest."},{"id":"s3-q13","s":"s3","q":"Why can compound interest hurt you on a credit card balance that you do not pay off?","o":["Unpaid interest is added to the balance and then charged interest too","Credit cards use simple interest only","The rate falls every month","Payments are never required"],"a":0,"x":"Interest that is not paid gets added to what you owe, and the next round of interest is charged on the bigger total. Credit cards generally compound, the rate does not fall automatically, and minimum payments are required."}]}</script>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp = (x,a=0,b=1) => Math.min(b, Math.max(a, x));
+const LETTERS = 'ABCDEF';
+const CHEV_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
+let DATA;
+try{ DATA = JSON.parse($('course-data').textContent); }
+catch(e){ document.body.innerHTML = '<p style="padding:24px;font:16px system-ui">This study set file is damaged. Ask Claude to rebuild it.</p>'; return; }
+const LS = 'claude-scholar-set:' + DATA.id;
+const C = Object.assign({}, DATA, { prog:{ qs:{}, attempts:[] } });
+try{ const raw = localStorage.getItem(LS); if(raw){ const p = JSON.parse(raw); if(p && p.qs && Array.isArray(p.attempts)) C.prog = p; } }catch(e){}
+const save = () => { try{ localStorage.setItem(LS, JSON.stringify(C.prog)); }catch(e){} };
+document.title = C.title;
+let session = null, timerId = 0;
+const VIEWS = ['vCourse','vNotes','vQ','vRes'];
+function show(id){ VIEWS.forEach(k => $(k).classList.toggle('hidden', k !== id)); window.scrollTo(0,0); }
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.remove('hidden'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), 2600); }
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+
+const qById = id => C.qs.find(q => q.id === id);
+function qMastery(id){ const r = C.prog.qs[id]; if(!r || !r.h || !r.h.length) return null; return r.h.reduce((a,b)=>a+b,0)/r.h.length; }
+function secStats(sid){ const qs = C.qs.filter(q => q.s === sid); let seen = 0, sum = 0;
+  qs.forEach(q => { const m = qMastery(q.id); if(m !== null){ seen++; sum += m; } }); return { total: qs.length, seen, mastery: seen ? sum/seen : null }; }
+function readiness(){ let n = 0, sum = 0; C.sections.forEach(s => { const x = secStats(s.id); if(x.mastery !== null){ n++; sum += x.mastery; } }); return n ? { pct: sum/n, n } : null; }
+function weakSecs(k){ return C.sections.map(s => ({ s, ...secStats(s.id) })).filter(x => x.mastery !== null).sort((a,b) => a.mastery - b.mastery).slice(0,k); }
+function missedIds(){ return C.qs.filter(q => { const r = C.prog.qs[q.id]; return r && r.h && r.h.length && r.h[r.h.length-1] === 0; }).map(q => q.id); }
+function weightedPick(pool, n, wfn){
+  const out = []; const items = pool.map(q => ({ q, w: Math.max(.0001, wfn(q)) }));
+  while(out.length < n && items.length){ const tot = items.reduce((a,b) => a+b.w, 0); let r = Math.random()*tot, i = 0;
+    for(; i<items.length; i++){ r -= items[i].w; if(r <= 0) break; } i = Math.min(i, items.length-1); out.push(items[i].q); items.splice(i,1); }
+  return out;
+}
+function drillWeight(q){
+  const r = C.prog.qs[q.id]; const sm = secStats(q.s).mastery; const m0 = sm !== null ? sm : .5;
+  let w; if(!r || !r.h || !r.h.length) w = 2.2; else { const m = qMastery(q.id); w = 1 + 4*(1-m) + ((r.k||0) < 2 ? 1 : 0); }
+  return w * (1 + (1-m0));
+}
+
+function renderCourse(){
+  show('vCourse');
+  const r = readiness(), weak = weakSecs(4), missed = missedIds();
+  const markPct = r ? clamp(r.pct*100, 0, 100) : null;
+  const last = C.prog.attempts[C.prog.attempts.length-1];
+  $('vCourse').innerHTML = `
+    <h1 id="courseH" tabindex="-1">${esc(C.title)}</h1>
+    <p class="sub-t">${esc(C.blurb)} <span class="level">${esc(C.level)}</span></p>
+    <section class="sheet"><h3>Where you stand</h3>
+      ${r ? `<div class="proj" style="margin-top:10px"><strong>${Math.round(r.pct*100)}%</strong><span class="muted">ready, based on your recent answers in ${r.n} of ${C.sections.length} sections. Aim for 80%.</span></div>`
+        : `<p class="muted" style="margin:8px 0 0">Answer a few questions and your readiness will appear here.</p>`}
+      <div class="scale" aria-hidden="true"><div class="bar2"></div><div class="pass"><span>80 target</span></div>
+        ${markPct === null ? '' : `<div class="mark" style="left:${markPct}%"></div>`}<div class="ends"><span>0</span><span>100</span></div></div>
+      ${last ? `<p class="note" style="margin-top:18px">Last session: ${esc(last.mode)} on ${new Date(last.ts).toLocaleDateString()}, ${last.correct}/${last.n} correct.</p>` : ''}</section>
+    <section><h3 style="margin-top:26px">Practice</h3>
+      <div class="modes">
+        <div class="mode"><h3>Timed test</h3><p>All ${C.qs.length} questions, one minute each, with results at the end.</p><div class="row"><button class="btn" type="button" data-act="timed">Start test</button></div></div>
+        <div class="mode"><h3>Weak-spot drill</h3><p>Up to 10 questions picked from what you miss most, with feedback after each.</p><div class="row"><button class="btn" type="button" data-act="drill">Start drill</button></div></div>
+        <div class="mode"><h3>Missed questions</h3><p>${missed.length ? `Retry the ${missed.length} question${missed.length>1?'s':''} you got wrong last time.` : 'Questions you get wrong will collect here so you can retry them.'}</p><div class="row"><button class="btn" type="button" data-act="missed" ${missed.length?'':'disabled'}>Retry missed</button></div></div>
+        <div class="mode"><h3>One section</h3><p>Up to 10 questions from a single section.</p><div class="row"><select id="secSel" aria-label="Section">${C.sections.map(s => `<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('')}</select><button class="btn" type="button" data-act="section">Start</button></div></div>
+      </div></section>
+    <section class="sheet"><h3>Sections</h3>
+      <div class="tablewrap"><table><thead><tr><th>Section</th><th>Mastery</th><th>Seen</th><th><span class="sr">Notes</span></th></tr></thead><tbody>
+      ${C.sections.map(s => { const x = secStats(s.id), m = x.mastery;
+        return `<tr><td>${esc(s.name)}</td><td>${x.total === 0 ? '<span class="muted">No questions</span>' : m === null ? '<span class="muted">Not started</span>' : `<div style="display:flex;gap:8px;align-items:center"><div class="meter ${m<.7?'low':''}"><i style="width:${Math.round(m*100)}%"></i></div><span>${Math.round(m*100)}%</span></div>`}</td>
+          <td>${x.seen} of ${x.total}</td><td><button class="link" type="button" data-act="notes" data-sec="${esc(s.id)}">Notes</button></td></tr>`; }).join('')}
+      </tbody></table></div>
+      ${weak.length ? `<h3 style="margin-top:18px;font-size:18px">Weakest right now</h3><div class="chips" style="margin-top:8px">${weak.map(w => `<span class="chp">${esc(w.s.name)} <b>${Math.round(w.mastery*100)}%</b></span>`).join('')}</div>` : ''}</section>
+    <section class="sheet"><h3>Want more?</h3><p class="muted" style="margin:6px 0 0">Ask Claude to add questions or a harder level to this study set, then open the new file. Your progress carries over because the set keeps the same ID.</p></section>
+    ${C.prog.attempts.length ? `<section class="sheet"><h3>History</h3><div class="tablewrap"><table><thead><tr><th>Date</th><th>Session</th><th>Score</th></tr></thead><tbody>
+      ${C.prog.attempts.slice().reverse().slice(0,12).map(a => `<tr><td>${new Date(a.ts).toLocaleDateString()}</td><td>${esc(a.mode)}</td><td>${a.correct}/${a.n} (${Math.round(a.correct/a.n*100)}%)</td></tr>`).join('')}
+      </tbody></table></div><p class="note" style="margin-top:6px"><button class="link" type="button" data-act="reset">Reset progress</button></p></section>` : ''}`;
+}
+function renderNotes(sid){
+  const s = C.sections.find(x => x.id === sid); if(!s) return;
+  show('vNotes');
+  const hasQ = C.qs.some(q => q.s === sid);
+  $('vNotes').innerHTML = `
+    <button class="back" type="button" data-act="course">${CHEV_L}${esc(C.title)}</button>
+    <h1 tabindex="-1">${esc(s.name)}</h1><p class="sub-t">${esc(s.summary)}</p>
+    <section class="sheet"><h3>Key points</h3><ol class="pts">${s.points.map(p => `<li>${esc(p)}</li>`).join('')}</ol></section>
+    ${s.terms.length ? `<section class="sheet"><h3>Terms</h3><div style="margin-top:6px">${s.terms.map(t => `<details><summary>${esc(t.t)}</summary><div class="d">${esc(t.d)}</div></details>`).join('')}</div></section>` : ''}
+    <div class="row2" style="margin-top:22px"><button class="btn clay" type="button" data-act="secquiz" data-sec="${esc(sid)}" ${hasQ?'':'disabled'}>Quiz me on this</button><button class="btn ghost" type="button" data-act="course">Back</button></div>`;
+}
+function startSession(mode, qs, timed){
+  if(!qs.length){ toast('No questions available for that choice.'); return; }
+  const mins = Math.max(5, qs.length);
+  session = { mode, exam: !!timed, items: qs.map(q => ({ id:q.id, order: shuffle(q.o.map((_,i)=>i)), sel:null, checked:false, flag:false })),
+    i:0, start:Date.now(), endAt: timed ? Date.now()+mins*60000 : null };
+  clearInterval(timerId); if(timed) timerId = setInterval(tick, 1000);
+  renderQuestion();
+}
+function tick(){
+  if(!session || !session.exam) return;
+  const left = session.endAt - Date.now(), el = $('timer');
+  if(left <= 0){ clearInterval(timerId); finish(); return; }
+  if(el){ const m = Math.floor(left/60000), s = Math.floor(left%60000/1000); el.textContent = `${m}:${String(s).padStart(2,'0')} left`; el.classList.toggle('low', left < 120000); }
+}
+function renderQuestion(){
+  show('vQ');
+  const it = session.items[session.i], q = qById(it.id), reveal = !session.exam && it.checked;
+  const sec = C.sections.find(s => s.id === q.s);
+  $('vQ').innerHTML = `
+    <div class="qhead"><div><strong>${esc(session.mode)}</strong> <span class="muted">· ${session.i+1} of ${session.items.length}</span></div>
+      <div class="row2">${session.exam ? `<span class="timer" id="timer"></span>` : ''}
+        <button class="btn ghost small flagbtn" type="button" data-act="flag" aria-pressed="${it.flag}">${it.flag?'Flagged':'Flag'}</button>
+        <button class="btn ghost small" type="button" data-act="quit">${session.exam?'Submit test':'End session'}</button></div></div>
+    <article class="sheet"><div class="qmeta">${esc(sec ? sec.name : '')}</div><p class="qtext">${esc(q.q)}</p>
+      <ul class="opts" role="radiogroup" aria-label="Answers">${it.order.map((oi,pos) => {
+        const sel = it.sel === oi; let cls = 'opt' + (sel ? ' sel' : '');
+        if(reveal){ if(oi === q.a) cls += ' right'; else if(sel) cls += ' wrong'; }
+        return `<li><button type="button" class="${cls}" data-opt="${oi}" role="radio" aria-checked="${sel}" ${reveal?'aria-disabled="true"':''}><span class="bub">${LETTERS[pos]}</span><span>${esc(q.o[oi])}</span></button></li>`; }).join('')}</ul>
+      ${reveal ? feedbackHTML(q, it) : ''}</article>
+    <div class="nav"><button class="btn ghost" type="button" data-act="prev" ${session.i===0?'disabled':''}>Previous</button>
+      ${!session.exam && !it.checked ? `<button class="btn clay" type="button" data-act="check" ${it.sel!==null?'':'disabled'}>Check answer</button>`
+        : session.i < session.items.length-1 ? `<button class="btn" type="button" data-act="next">Next question</button>` : `<button class="btn clay" type="button" data-act="quit">${session.exam?'Submit test':'See results'}</button>`}</div>
+    ${session.exam ? `<div class="grid" aria-label="Question navigator">${session.items.map((x,k) => `<button type="button" class="cell ${x.sel!==null?'ans':''} ${x.flag?'flg':''} ${k===session.i?'cur':''}" data-go="${k}" aria-label="Question ${k+1}${x.flag?', flagged':''}${x.sel!==null?', answered':''}">${k+1}</button>`).join('')}</div><p class="note">Filled circles are answered; a gold dot marks a flag.</p>` : ''}`;
+  tick(); window.scrollTo(0,0);
+}
+const isCorrect = (q, it) => it.sel === q.a;
+function feedbackHTML(q, it){
+  const ok = isCorrect(q, it), L = LETTERS[it.order.indexOf(q.a)];
+  return `<div class="feedback ${ok?'':'bad'}" aria-live="polite"><p><strong>${ok ? 'Correct.' : `Not quite. The answer is ${L}.`}</strong></p><p>${esc(q.x)}</p></div>`;
+}
+function record(q, it){
+  const r = C.prog.qs[q.id] || { s:0, h:[], k:0 }; const ok = isCorrect(q, it) ? 1 : 0;
+  r.s++; r.h = (r.h||[]).concat(ok).slice(-5); r.k = ok ? (r.k||0)+1 : 0; r.t = Date.now(); C.prog.qs[q.id] = r;
+}
+function finish(){
+  clearInterval(timerId);
+  const s = session; let correct = 0; const bySec = {};
+  s.items.forEach(it => {
+    if(!(s.exam || it.checked)) return;
+    const q = qById(it.id), ok = isCorrect(q, it);
+    bySec[q.s] = bySec[q.s] || [0,0]; bySec[q.s][1]++; record(q, it); if(ok){ correct++; bySec[q.s][0]++; }
+  });
+  const graded = s.exam ? s.items.length : s.items.filter(it => it.checked).length;
+  if(!graded){ session = null; renderCourse(); return; }
+  const attempt = { ts: Date.now(), mode: s.mode, n: graded, correct, bySec, mins: Math.round((Date.now()-s.start)/60000) };
+  C.prog.attempts.push(attempt); C.prog.attempts = C.prog.attempts.slice(-40); save();
+  renderResults(s, attempt); session = null;
+}
+function renderResults(s, a){
+  show('vRes');
+  const pct = a.correct / a.n, items = s.exam ? s.items : s.items.filter(it => it.checked);
+  const word = pct >= .8 ? 'Strong' : pct >= .6 ? 'Getting there' : 'Keep practicing';
+  $('vRes').innerHTML = `
+    <section class="sheet"><p class="muted" style="margin:0">${esc(s.mode)} · ${a.mins} min</p>
+      <p class="verdict ${pct>=.8?'ok-t':pct<.6?'bad-t':''}">${Math.round(pct*100)}% · ${word}</p><p style="margin:0">${a.correct} of ${a.n} correct.</p>
+      <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Section</th><th>This session</th></tr></thead><tbody>
+      ${C.sections.filter(x => a.bySec[x.id]).map(x => { const [c,n] = a.bySec[x.id], m = c/n;
+        return `<tr><td>${esc(x.name)}</td><td><div style="display:flex;gap:8px;align-items:center"><div class="meter ${m<.7?'low':''}"><i style="width:${Math.round(m*100)}%"></i></div>${c}/${n}</div></td></tr>`; }).join('')}
+      </tbody></table></div>
+      <div class="row2" style="margin-top:18px"><button class="btn clay" type="button" data-act="drill">Drill my weak spots</button><button class="btn ghost" type="button" data-act="course">Back to study set</button></div></section>
+    <section class="sheet rev"><div class="row2" style="justify-content:space-between"><h3>Review answers</h3>
+      <label class="note" style="display:flex;gap:8px;align-items:center;min-height:44px"><input type="checkbox" id="onlyWrong" checked> Only questions I missed</label></div>
+      <div id="revList">${items.map((it,k) => { const q = qById(it.id), ok = isCorrect(q, it), skip = it.sel === null;
+        return `<details data-ok="${ok}"><summary><span class="dot ${ok?'ok':skip?'skip':'no'}"></span><span>${k+1}. ${esc(q.q)}</span></summary>
+          <ul class="ans-list">${it.order.map(oi => { const c = oi === q.a, y = it.sel === oi; return `<li class="${c?'c':y?'y':''}">${esc(q.o[oi])}${c?' (correct)':y?' (your answer)':''}</li>`; }).join('')}</ul>
+          <p style="margin:10px 0 12px 24px">${esc(q.x)}</p></details>`; }).join('')}</div></section>`;
+  filterReview(); $('onlyWrong').addEventListener('change', filterReview); window.scrollTo(0,0);
+}
+function filterReview(){ const only = $('onlyWrong') && $('onlyWrong').checked; document.querySelectorAll('#revList details').forEach(d => d.classList.toggle('hidden', only && d.dataset.ok === 'true')); }
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  const opt = t.closest('[data-opt]');
+  if(opt && session){ const it = session.items[session.i]; if(!session.exam && it.checked) return; it.sel = +opt.dataset.opt; renderQuestion(); return; }
+  const go = t.closest('[data-go]'); if(go && session){ session.i = +go.dataset.go; renderQuestion(); return; }
+  const b = t.closest('[data-act]'); if(!b) return;
+  const act = b.dataset.act, sec = b.dataset.sec;
+  if(act === 'course') renderCourse();
+  else if(act === 'notes') renderNotes(sec);
+  else if(act === 'secquiz') startSession('Section quiz', shuffle(C.qs.filter(q => q.s === sec)).slice(0,10), false);
+  else if(act === 'timed') startSession('Timed test', shuffle(C.qs), true);
+  else if(act === 'drill') startSession('Weak-spot drill', weightedPick(C.qs, Math.min(10, C.qs.length), drillWeight), false);
+  else if(act === 'missed') startSession('Missed questions', shuffle(missedIds().map(qById)).slice(0,20), false);
+  else if(act === 'section'){ const s = $('secSel').value, nm = (C.sections.find(x => x.id === s)||{}).name || 'Section'; startSession(nm, shuffle(C.qs.filter(q => q.s === s)).slice(0,10), false); }
+  else if(act === 'reset'){ if(confirm('Erase progress and history for this study set?')){ C.prog = { qs:{}, attempts:[] }; save(); renderCourse(); toast('Progress reset.'); } }
+  else if(!session) return;
+  else if(act === 'flag'){ const it = session.items[session.i]; it.flag = !it.flag; renderQuestion(); }
+  else if(act === 'prev'){ session.i = Math.max(0, session.i-1); renderQuestion(); }
+  else if(act === 'next'){ session.i = Math.min(session.items.length-1, session.i+1); renderQuestion(); }
+  else if(act === 'check'){ session.items[session.i].checked = true; renderQuestion(); }
+  else if(act === 'quit'){
+    if(session.exam){ const un = session.items.filter(x => x.sel === null).length, fl = session.items.filter(x => x.flag).length;
+      if(!confirm(`Submit the test?${un?` ${un} unanswered.`:''}${fl?` ${fl} flagged.`:''}`)) return; }
+    finish();
+  }
+});
+document.addEventListener('keydown', e => {
+  if(!session || $('vQ').classList.contains('hidden')) return;
+  if(['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  const pos = LETTERS.indexOf(e.key.toUpperCase()), it = session.items[session.i];
+  if(pos >= 0 && pos < it.order.length){ const btn = document.querySelector(`[data-opt="${it.order[pos]}"]`); if(btn) btn.click(); }
+  else if(e.key === 'Enter'){ const c = document.querySelector('[data-act="check"]:not([disabled]), [data-act="next"]'); if(c){ e.preventDefault(); c.click(); } }
+});
+renderCourse();
+})();
+</script>
+</body>
+</html>

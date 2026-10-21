@@ -1,0 +1,98 @@
+{
+  "title": "Compound interest basics",
+  "topic": "How compound interest works",
+  "level": "Beginner",
+  "blurb": "Work out how money grows when interest earns interest, and use the formula and the Rule of 72.",
+  "sections": [
+    {
+      "id": "s1",
+      "name": "Simple vs compound interest",
+      "summary": "How interest is calculated on the original amount alone versus on the amount plus the interest already earned.",
+      "points": [
+        "Interest is the price of borrowing money or the reward for lending it, usually quoted as a percentage per year.",
+        "Simple interest is calculated only on the original amount, called the principal.",
+        "Compound interest is calculated on the principal plus any interest already earned.",
+        "Because earned interest also earns interest, compound growth speeds up over time while simple growth stays in a straight line."
+      ],
+      "terms": [
+        {"t": "Principal", "d": "The original amount of money borrowed or invested."},
+        {"t": "Simple interest", "d": "Interest calculated only on the principal."},
+        {"t": "Compound interest", "d": "Interest calculated on the principal and on interest already earned."}
+      ]
+    },
+    {
+      "id": "s2",
+      "name": "The compound interest formula",
+      "summary": "Reading and using A = P(1 + r/n)^(nt) to find a final balance.",
+      "points": [
+        "The formula is A = P(1 + r/n)^(nt), where A is the final amount.",
+        "P is the principal, r is the annual rate written as a decimal, n is the number of compounding periods per year, and t is the number of years.",
+        "A 6% rate becomes r = 0.06 in the formula.",
+        "Compounding more often, such as monthly instead of yearly, gives a slightly higher final amount at the same stated rate."
+      ],
+      "terms": [
+        {"t": "Compounding period", "d": "How often earned interest is added to the balance, such as monthly or yearly."},
+        {"t": "Nominal rate", "d": "The stated yearly rate before compounding is applied."},
+        {"t": "Annual percentage yield (APY)", "d": "The effective yearly rate after compounding is taken into account."}
+      ]
+    },
+    {
+      "id": "s3",
+      "name": "Rule of 72 and long horizons",
+      "summary": "A quick way to estimate doubling time, and why time and debt matter so much with compounding.",
+      "points": [
+        "The Rule of 72 estimates doubling time: years to double is roughly 72 divided by the annual percentage rate.",
+        "At 8% a year, money takes about 9 years to double.",
+        "The rule is an approximation that works best for rates between about 6% and 10%.",
+        "Starting earlier lets growth compound for longer, so time often matters more than the exact rate.",
+        "Compounding works against borrowers too, as with an unpaid credit card balance."
+      ],
+      "terms": [
+        {"t": "Rule of 72", "d": "A shortcut: divide 72 by the annual rate to estimate years needed to double."},
+        {"t": "Doubling time", "d": "How long it takes a balance to grow to twice its starting size."},
+        {"t": "Time horizon", "d": "The length of time money is left to grow or debt is left to accrue."}
+      ]
+    }
+  ],
+  "questions": [
+    {"s": "s1", "q": "You invest $1,000 at 5% simple interest per year. How much interest do you earn in total over 3 years?",
+     "o": ["$50", "$150", "$157.63", "$1,150"], "a": 1,
+     "x": "Simple interest is principal times rate times years: 1,000 x 0.05 x 3 = $150. $157.63 is the compound interest for the same case (1,000 x 1.05^3 minus 1,000). $1,150 is the final balance, not the interest, and $50 is only one year."},
+    {"s": "s1", "q": "What makes compound interest different from simple interest?",
+     "o": ["It always uses a higher stated rate", "It is calculated only once at the end", "It is also calculated on interest already earned", "It is only paid on loans"], "a": 2,
+     "x": "Compound interest is figured on the principal plus interest that has already been added. The stated rate can be the same in both cases, it applies to savings as well as loans, and it is added every period rather than once."},
+    {"s": "s1", "q": "Which description fits how a balance grows under simple interest?",
+     "o": ["It adds the same dollar amount every period", "It adds a larger dollar amount each period", "It adds a smaller dollar amount each period", "It grows only in the final year"], "a": 0,
+     "x": "Simple interest is always figured on the original principal, so the dollar amount added each period never changes. A growing amount each period describes compounding."},
+    {"s": "s1", "q": "A $2,000 deposit earns 10% interest compounded annually. What is the balance after 2 years?",
+     "o": ["$2,400", "$2,420", "$2,440", "$2,200"], "a": 1,
+     "x": "After year 1 the balance is 2,000 x 1.10 = $2,200. After year 2 it is 2,200 x 1.10 = $2,420. $2,400 would be simple interest (2 x $200), and $2,200 is only the first year."},
+    {"s": "s2", "q": "In the formula A = P(1 + r/n)^(nt), what does n represent?",
+     "o": ["The number of years", "The annual rate as a decimal", "The final amount", "The number of times interest compounds per year"], "a": 3,
+     "x": "n is the number of compounding periods per year, such as 12 for monthly. The years are t, the rate is r, and the final amount is A."},
+    {"s": "s2", "q": "Which value of r do you use in the formula for a 4.5% annual rate?",
+     "o": ["4.5", "0.45", "0.045", "0.0045"], "a": 2,
+     "x": "The rate goes into the formula as a decimal, so 4.5% is 4.5 divided by 100, which is 0.045. Using 4.5 or 0.45 would overstate growth enormously."},
+    {"s": "s2", "q": "Two accounts both advertise a 12% yearly rate. One compounds yearly and the other monthly. After one year, which has more money?",
+     "o": ["The yearly one", "The monthly one", "They are exactly equal", "It cannot be determined"], "a": 1,
+     "x": "With monthly compounding each month's interest starts earning interest sooner. The balance grows by 1.01^12, about 12.68%, compared with exactly 12% for yearly compounding."},
+    {"s": "s2", "q": "You deposit $500 at 6% compounded annually for 2 years. Which expression gives the final amount?",
+     "o": ["500 x (1 + 0.06)^2", "500 x (1 + 0.06 x 2)", "500 x (1 + 0.06/2)^2", "500 + 0.06 x 2"], "a": 0,
+     "x": "Annual compounding means n = 1 and t = 2, giving 500 x (1.06)^2. The second option is simple interest, the third compounds twice a year for only one year, and the fourth ignores the principal's growth."},
+    {"s": "s2", "q": "What is the effective annual rate of 12% nominal interest compounded monthly, to the nearest hundredth of a percent?",
+     "o": ["12.00%", "12.36%", "12.68%", "13.00%"], "a": 2,
+     "x": "Monthly compounding multiplies the balance by (1 + 0.12/12)^12 = 1.01^12, about 1.1268, so the effective rate is 12.68%. 12.36% is what you would get compounding twice a year, and 12.00% ignores compounding."},
+    {"s": "s3", "q": "Using the Rule of 72, about how many years does it take money to double at 6% per year?",
+     "o": ["6 years", "9 years", "12 years", "18 years"], "a": 2,
+     "x": "The Rule of 72 gives 72 divided by 6, which is 12 years. 9 years would be the answer at 8%, and 6 or 18 years do not match the rule."},
+    {"s": "s3", "q": "Money is expected to double in about 18 years. According to the Rule of 72, what annual rate does that imply?",
+     "o": ["2%", "4%", "6%", "8%"], "a": 1,
+     "x": "Rearranging the rule gives rate = 72 divided by years, so 72 / 18 = 4%. A rate of 8% would double money in about 9 years."},
+    {"s": "s3", "q": "Everything else equal, what is the best reason to start investing earlier?",
+     "o": ["Growth has more time to compound", "Interest rates are higher for younger people", "Taxes disappear over time", "Simple interest turns into compound interest"], "a": 0,
+     "x": "Compounding builds on itself, so each extra year of growth adds to a larger base. Rates do not depend on your age, taxes do not vanish, and simple interest never turns into compound interest."},
+    {"s": "s3", "q": "Why can compound interest hurt you on a credit card balance that you do not pay off?",
+     "o": ["Unpaid interest is added to the balance and then charged interest too", "Credit cards use simple interest only", "The rate falls every month", "Payments are never required"], "a": 0,
+     "x": "Interest that is not paid gets added to what you owe, and the next round of interest is charged on the bigger total. Credit cards generally compound, the rate does not fall automatically, and minimum payments are required."}
+  ]
+}
